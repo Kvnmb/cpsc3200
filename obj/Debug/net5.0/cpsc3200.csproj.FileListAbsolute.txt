@@ -1,0 +1,5 @@
+/home/st/kbui1/cpsc3200/obj/Debug/net5.0/cpsc3200.csprojAssemblyReference.cache
+/home/st/kbui1/cpsc3200/obj/Debug/net5.0/cpsc3200.GeneratedMSBuildEditorConfig.editorconfig
+/home/st/kbui1/cpsc3200/obj/Debug/net5.0/cpsc3200.AssemblyInfoInputs.cache
+/home/st/kbui1/cpsc3200/obj/Debug/net5.0/cpsc3200.AssemblyInfo.cs
+/home/st/kbui1/cpsc3200/obj/Debug/net5.0/cpsc3200.csproj.CoreCompileInputs.cache

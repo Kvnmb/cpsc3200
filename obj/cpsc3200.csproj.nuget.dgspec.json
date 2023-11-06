@@ -1,0 +1,60 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/st/kbui1/cpsc3200/cpsc3200.csproj": {}
+  },
+  "projects": {
+    "/home/st/kbui1/cpsc3200/cpsc3200.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/st/kbui1/cpsc3200/cpsc3200.csproj",
+        "projectName": "cpsc3200",
+        "projectPath": "/home/st/kbui1/cpsc3200/cpsc3200.csproj",
+        "packagesPath": "/home/st/kbui1/.nuget/packages/",
+        "outputPath": "/home/st/kbui1/cpsc3200/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/st/kbui1/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net5.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net5.0": {
+            "targetAlias": "net5.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/5.0.214/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
