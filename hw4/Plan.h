@@ -1,6 +1,6 @@
 // Kevin Bui
 // October 5, 2023
-// Last Revised: October 9, 2023
+// Last Revised: November 7, 2023
 // Plan.h
 // IDE: Visual Studio Code
 
@@ -22,6 +22,10 @@
 
 // Dependency injection: client passes in an array of Formula objects to instantiate Plan's Formula array
 
+// Exception handling added for functions when parameters are invalid
+
+// Operator overloading of +, +=, and --
+
 
 #ifndef PLAN_H
 #define PLAN_H
@@ -31,9 +35,6 @@ using namespace std;
 
 class Plan {
     private:
-        Formula* formulaArr;
-        unsigned int numFormulas;
-        unsigned int maxSize = 10;
         const unsigned int increase = 2;
 
         // Precondition: numFormulas = maxSize, add() is called
@@ -47,6 +48,16 @@ class Plan {
         // Precondition: none
         void swap(Plan &lhs, Plan &rhs);
         // Postcondition: the Plan objects swap their values
+
+        // Precondition: called by public functions
+        bool formulaNumNotInRange(unsigned int formulaNum) const;
+        // Postcondition: returns validity check
+
+    protected:
+        Formula* formulaArr;
+        unsigned int numFormulas;
+        unsigned int maxSize = 10;
+
     public:
 
         // Precondition: none
@@ -54,11 +65,12 @@ class Plan {
         // Postcondition: empty object
 
         // Precondition: none
-        ~Plan();
+        virtual ~Plan();
         // Postcondition: deallocated memory
 
-        // Precondition: client passes in array of formula objects for dependency injection and size of array 
-        Plan(Formula array[], unsigned int size);
+        // Precondition: client passes in array of formula objects for dependency injection and size of array
+        // size must be correct length of array
+        Plan(Formula* array, unsigned int size);
         // Postcondition: Plan object is instantiated and nonempty
 
         // Precondition: client has instantiated a Formula object to pass into function
@@ -66,11 +78,11 @@ class Plan {
         // Postcondition: Formula object is passed into Plan's Formula array
 
         // Precondition: Formula array is not empty
-        void remove();
+        virtual void remove();
         // Postcondition: numFormulas decremented, or nothing happens if empty
 
         // Precondition: number is between 1 and numFormulas, Formula object instantiated
-        void replace(unsigned int replaceNum, const Formula& replaceFormula);
+        virtual void replace(unsigned int replaceNum, const Formula& replaceFormula);
         // Postcondition: Array object replaced with parameter replaceFormula
 
         // Precondition: none
@@ -82,7 +94,7 @@ class Plan {
         // Postcondition: no effect to state, returns level of Formula object
 
         // Precondition: Formula array is non-empty
-        Resource* apply(unsigned int formulaNum);
+        virtual Resource* apply(unsigned int formulaNum);
         // Postcondition: apply is called for specified object in array
 
         // Precondition: src is instantiated
@@ -101,9 +113,41 @@ class Plan {
         Plan& operator=(Plan&& src);
         // Postcondition: move semantics applied
         
-        Resource* getInput(uint formulaNum);
+        // Precondition: formulaNum is between 1 and numFormulas
+        Resource* getInput(unsigned int formulaNum) const;
+        // Postcondition: returns the inputs of the Formula object
 
-        Resource* getOutput(uint formulaNum);
+        // Precondition: formulaNum is between 1 and numFormulas
+        Resource* getOutput(unsigned int formulaNum) const;
+        // Postcondition: returns the outputs of the Formula object
+
+        // Precondition: number is between 1 and numFormulas
+        int getInputSize(unsigned int formulaNum) const;
+        // Postcondition: returns the number of inputs of Formula object
+
+        // Precondition: number is between 1 and numFormulas
+        int getOutputSize(unsigned int formulaNum) const;
+        // Postcondition: returns the number of outputs of Formula object
+
+        // Precondition: src is instantiated
+        bool operator==(const Plan& src) const;
+        // Postcondition: boolean comparison of objects returned
+
+        // Precondition: src is instantiated
+        bool operator!=(const Plan& src) const;
+        // Postcondition: boolean comparison of objects returned
+
+        // Precondition: other is instantiated
+        Plan operator+(const Plan& other);
+        // Postcondition: formulas added to object
+
+        // Precondition: other is instantiated
+        Plan& operator+=(const Plan& other);
+        // Postcondition: formulas added to object
+
+        // Precondition: Plan is nonempty
+        Plan& operator--();
+        // Postcondition: numFormulas decremented
 };
 
 #endif
@@ -127,3 +171,7 @@ class Plan {
 // functions will return values of specified object in array
 
 // resize() function doubles the maxSize of the array
+
+// overloaded + and += operators call the add function to add the formulas of plan object together, ease of access
+
+// operator-- calls remove with simpler syntax

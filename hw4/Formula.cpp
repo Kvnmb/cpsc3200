@@ -1,6 +1,6 @@
 // Kevin Bui
 // October 5, 2023
-// Last Revised: October 8, 2023
+// Last Revised: November 7, 2023
 // Formula.cpp
 // IDE: Visual Studio Code
 // Implementation file for Formula.h
@@ -35,7 +35,7 @@ Formula::Formula()
 }
 
 
-Formula::Formula(Resource inputInit[] = nullptr, unsigned int numInputs = 0, Resource outputInit[] = nullptr, unsigned int numOutputs = 0)
+Formula::Formula(Resource inputInit[], unsigned int numInputs, Resource outputInit[], unsigned int numOutputs)
 {
     inputs = new Resource[numInputs];
     outputs = new Resource[numOutputs];
@@ -91,6 +91,62 @@ Formula& Formula::operator=(const Formula& src)
     copy(src);
 return *this;
 }
+
+void Formula::swap(Formula& lhs, Formula& rhs)
+{
+    Formula temp;
+
+    temp.currentLevel = lhs.currentLevel;
+    temp.failPercentage = lhs.failPercentage;
+    temp.reducedPercentage = lhs.reducedPercentage;
+    temp.expectedPercentage = lhs.expectedPercentage;
+    temp.bonusPercentage = lhs.bonusPercentage;
+    temp.inputs = lhs.inputs;
+    temp.outputs = lhs.outputs;
+    temp.inputSize = lhs.inputSize;
+    temp.outputSize = lhs.outputSize;
+
+    lhs.currentLevel = rhs.currentLevel;
+    lhs.failPercentage = rhs.failPercentage;
+    lhs.reducedPercentage = rhs.reducedPercentage;
+    lhs.expectedPercentage = rhs.expectedPercentage;
+    lhs.bonusPercentage = rhs.bonusPercentage;
+    lhs.inputs = rhs.inputs;
+    lhs.outputs = rhs.outputs;
+    lhs.inputSize = rhs.inputSize;
+    lhs.outputSize = rhs.outputSize;
+
+    rhs.currentLevel = temp.currentLevel;
+    rhs.failPercentage = temp.failPercentage;
+    rhs.reducedPercentage = temp.reducedPercentage;
+    rhs.expectedPercentage = temp.expectedPercentage;
+    rhs.bonusPercentage = temp.bonusPercentage;
+    rhs.inputs = temp.inputs;
+    rhs.outputs = temp.outputs;
+    rhs.inputSize = temp.inputSize;
+    rhs.outputSize = temp.outputSize;
+}
+
+Formula::Formula(Formula&& src)
+{
+    swap(*this, src);
+    src.currentLevel = 0;
+    src.failPercentage = 0;
+    src.reducedPercentage = 0;
+    src.expectedPercentage = 0;
+    src.bonusPercentage = 0;
+    src.inputs = nullptr;
+    src.outputs = nullptr;
+    src.inputSize = 0;
+    src.outputSize = 0;
+}
+
+Formula& Formula::operator=(Formula&& src)
+{
+    swap(*this, src);
+    return *this;
+}
+
 
 Formula::~Formula()
 {
@@ -232,3 +288,95 @@ void Formula::raiseLevel()
         }
     }
 }  
+
+unsigned int Formula::getInputSize() const
+{
+    return inputSize;
+}
+
+unsigned int Formula::getOutputSize() const
+{
+    return outputSize;
+}
+
+bool Formula::operator==(const Formula& src) const
+{
+    if (this == &src) return true;
+
+    if (currentLevel == src.currentLevel
+    && failPercentage == src.failPercentage
+    && reducedPercentage == src.reducedPercentage
+    && expectedPercentage == src.expectedPercentage
+    && bonusPercentage == src.bonusPercentage
+    && inputSize == src.inputSize
+    && outputSize == src.outputSize){
+
+        for (unsigned int x; x < inputSize; x++){
+            if (inputs[x].name == src.inputs[x].name
+            && inputs[x].quantity == src.inputs[x].quantity){
+                continue;
+            }
+            return false;
+        }
+
+        for (unsigned int x; x < outputSize; x++){
+            if (outputs[x].name == src.outputs[x].name
+            && outputs[x].quantity == src.outputs[x].quantity){
+                continue;
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+bool Formula::operator!=(const Formula& src) const
+{
+    if (this == &src) return false;
+
+    if (currentLevel != src.currentLevel
+    || failPercentage != src.failPercentage
+    || reducedPercentage != src.reducedPercentage
+    || expectedPercentage != src.expectedPercentage
+    || bonusPercentage != src.bonusPercentage
+    || inputSize != src.inputSize
+    || outputSize != src.outputSize) return true;
+
+    for (unsigned int x; x < inputSize; x++){
+        if (inputs[x].name != src.inputs[x].name
+        || inputs[x].quantity != src.inputs[x].quantity){
+            return true;
+        }
+    }
+
+    for (unsigned int x; x < outputSize; x++){
+        if (outputs[x].name != src.outputs[x].name
+        || outputs[x].quantity != src.outputs[x].quantity){
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// Implementation Invariants: The client will pass in arrays of input and output resources as well as
+// the array sizes
+
+// Input, output, and apply functions return a pointer to array, client responsible for deallocation
+
+// The sum of the output percentages must always be 1.0
+
+// input and output functions return a Resource array
+
+// Apply() function uses random double generation
+
+// Formula object holds instantiated Resource for lifetime
+
+// Resource quantities are nonnegative
+
+// Input and Output queries as well as Apply() can be called infinite times
+
+// input and output functions return copies of the real arrays

@@ -1,6 +1,6 @@
 // Kevin Bui
 // October 5, 2023
-// Last Revised: October 8, 2023
+// Last Revised: November 7, 2023
 // Formula.h
 // IDE: Visual Studio Code
 
@@ -12,10 +12,11 @@
 
 // Percentages and currentLevel (RaiseLevel()) are subject to change when ExpectedResult() and BonusResult() are called
 
-// Deep copy semantics supported 
+// Deep copy and move semantics supported 
 
 // Resource struct is a public struct that client is able to use to instantiate Formulas
 
+// Must use functions to acquire inputSize and outputSize for traversing arrays
 #ifndef FORMULA_H
 #define FORMULA_H
 #include <iostream>
@@ -84,6 +85,10 @@ class Formula {
         // Precondition: none
         void copy(const Formula& src);
         // Postcondition: overloaded assignment operator copy
+
+        // Precondition: none
+        void swap(Formula& lhs, Formula& rhs);
+        // Postcondition: Formula objects swap values
     
     public:
         // Precondition: none
@@ -101,6 +106,14 @@ class Formula {
         // Precondition: valid Formula object passed
         Formula& operator=(const Formula& src);
         // Postcondition: deep copy semantics employed
+
+        // Precondition: src is instantiated
+        Formula(Formula&& src);
+        // Postcondition: move semantics applied
+
+        // Precondition: src is instantiated
+        Formula& operator=(Formula&& src);
+        // Postcondition: move semantics applied
 
         // Precondition: client has passed two nonempty Resource arrays
         Formula(Resource inputInit[], unsigned int numInputs, Resource outputInit[], unsigned int numOutputs);        
@@ -123,7 +136,21 @@ class Formula {
         unsigned int getLevel() const;
         // Postcondition: value 0 or greater returned
 
+        // Precondition: Object instantiated
+        unsigned int getInputSize() const;
+        // Postcondition: value 0 or greater returned
 
+        // Precondition: Object instantiated
+        unsigned int getOutputSize() const;
+        // Postcondition: value 0 or greater returned
+
+        // Precondition: src is instantiated
+        bool operator==(const Formula& src) const;
+        // Postcondition: returns boolean comparison of objects
+
+        // Precondition: src is instantiated
+        bool operator!=(const Formula& src) const;
+        // Postcondition: returns boolean comparison of objects
     };
 
 #endif

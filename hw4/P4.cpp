@@ -1,160 +1,124 @@
 // Kevin Bui
-// October 5, 2023
-// Last Revised: October 9, 2023
-// P2.cpp
+// November 5, 2023
+// Last Revised: November 8, 2023
+// P4.cpp
 // IDE: Visual Studio Code
 
 #include <iostream>
+#include <memory>
+#include <unordered_map>
+#include "ExecutablePlan.h"
 #include "Plan.h"
+#include "Formula.h"
 
 using namespace std;
 
-Formula* createArray(int arraySize);
-void printNumFormulas(const Plan& obj, const Plan& copyObj, const Plan& assignmentCopyObj);
-void testRemove(Plan& obj, Plan& copyObj, Plan& assignmentCopyObj);
-void testAdd(Plan& obj, Plan& copyObj, Plan& assignmentCopyObj);
-void testReplace(Plan& obj, Plan& copyObj, Plan& assignmentCopyObj);
-void testGetLevel(Plan& obj, Plan& copyObj, Plan& assignmentCopyObj);
-void testResize(Plan& obj);
+Formula* createFormulaArray(unsigned int arraySize);
+Resource* createResourceArray( unsigned int resourceSize);
+unique_ptr<Stockpile> testDecrement(unique_ptr<Stockpile> ptr);
+unique_ptr<Stockpile> testIncrement(unique_ptr<Stockpile> ptr);
+unique_ptr<Stockpile> testApply(unique_ptr<Stockpile> ptr, ExecutablePlan& obj);
 
 int main()
 {
-    int arraySize = 4;
+    unsigned int arraySize = 4;
+    unsigned int resourceSize = 2;
 
-    // client manually creates Formula objects and puts them into an array
-    Formula* insert = createArray(arraySize);
+    Formula* insert = createFormulaArray(arraySize);
 
-    // creates an object through dependency injection
-    Plan obj(insert, arraySize);
-    
-    // creates an object through copy constructor
-    Plan copyObj(obj);
+    ExecutablePlan obj(insert, arraySize);
 
-    // creates an object through the overloaded assignment operator
-    Plan assignmentCopyObj = obj;
-    
-    testRemove(obj, copyObj, assignmentCopyObj);
+    Resource* resource = createResourceArray(resourceSize);
 
-    testAdd(obj, copyObj, assignmentCopyObj);
+    unique_ptr<Stockpile> ptr = make_unique<Stockpile>(resource, resourceSize);
 
-    testReplace(obj, copyObj, assignmentCopyObj);
+    cout << "\nInventory:";
 
-    testGetLevel(obj, copyObj, assignmentCopyObj);
+    ptr->printStockpile();
 
-    testResize(obj);
+    ptr = testDecrement(move(ptr));
+
+    ptr = testIncrement(move(ptr));
+
+    ptr = testApply(move(ptr), obj);
+
+    ExecutablePlan copy(obj);
+
+    if(copy == obj) cout << "\n\nThese two objects are the same.\n" ;
+
+
+    copy.apply(1);
+    copy.apply(1);
+
+    if(copy != obj) cout << "\n\nThese two objects are not the same.\n" ;
+
+    cout << "\n\n" << copy.getNumFormulas();
+
+    copy = copy + obj;
+
+    cout << "\n\n" << copy.getNumFormulas();
+
+    copy += obj;
+
+    cout << "\n\n" << copy.getNumFormulas();
+
+    --copy;
+
+    cout << "\n\n" << copy.getNumFormulas();
 
     return 0;
 }
 
 
-void testResize(Plan& obj)
+unique_ptr<Stockpile> testApply(unique_ptr<Stockpile> ptr, ExecutablePlan& obj){
+    cout << "\nInventory before apply: ";
+
+    ptr->printStockpile();
+
+    cout << "\nInventory after apply: ";
+
+    ptr = obj.apply(move(ptr));
+
+    ptr->printStockpile();
+
+    return ptr;
+}
+
+
+unique_ptr<Stockpile> testIncrement(unique_ptr<Stockpile> ptr){
+    cout << "\nIncreasing iron by 5:\n";
+
+    ptr->increase("iron", 5);
+
+    cout << endl << "Amount of iron: " << ptr->getQuantity("iron") << endl;
+
+    return ptr;
+}
+
+
+unique_ptr<Stockpile> testDecrement(unique_ptr<Stockpile> ptr){
+    cout << "\nDecrementing coal by 3:\n";
+
+    ptr->decrease("coal", 3);
+
+    cout << endl << "Amount of coal: " << ptr->getQuantity("coal") << endl;
+
+    return ptr;
+}
+
+Resource* createResourceArray(unsigned int resourceSize)
 {
-    Resource input[2];
-    Resource output[1];
+    Resource* arr = new Resource[resourceSize];
 
-    input[0] = Resource("fire", 2);
-    input[1] = Resource("water", 2);
-    output[0] = Resource("steam", 4);
+    arr[0].name = "iron";
+    arr[0].quantity = 10;
+    arr[1].name = "coal";
+    arr[1].quantity = 5;
 
-    Formula temp(input, 2, output, 1);
-
-    cout << "\n\nBefore adding:\n";
-    cout << obj.getNumFormulas();
-
-    for(int x = 0; x < 15; x++){
-        obj.add(temp);
-    }
-    cout << "\n\nAfter adding:\n";
-    cout << obj.getNumFormulas() << endl;
+    return arr;
 }
 
-
-void testGetLevel(Plan& obj, Plan& copyObj, Plan& assignmentCopyObj)
-{
-    cout << "\n\nLevels before apply: \n";
-    cout << "\nOriginal object: " << obj.getLevel(1) << endl;
-    cout << "\nCopy object: " << copyObj.getLevel(1) << endl;
-    cout << "\nAssignment copy object: " << assignmentCopyObj.getLevel(1) << endl;
-
-    for(int x = 0; x < 5; x++){
-        obj.apply(1);
-        copyObj.apply(1);
-        assignmentCopyObj.apply(1);
-    }
-
-    cout << "\n\nLevels after apply: \n";
-    cout << "\nOriginal object: " << obj.getLevel(1) << endl;
-    cout << "\nCopy object: " << copyObj.getLevel(1) << endl;
-    cout << "\nAssignment copy object: " << assignmentCopyObj.getLevel(1) << endl;
-}
-
-void testReplace(Plan& obj, Plan& copyObj, Plan& assignmentCopyObj)
-{
-    Resource input[2];
-    Resource output[1];
-
-    input[0] = Resource("rock", 2);
-    input[1] = Resource("heat", 2);
-    output[0] = Resource("lava", 4);
-
-    Formula temp(input, 2, output, 1);
-
-    cout << "\n\nBefore replacing:\n";
-    cout << obj.getNumFormulas() << endl;
-
-    obj.replace(1, temp);
-
-    cout << "\n\nAfter replacing:\n";
-    cout << obj.getNumFormulas() << endl;
-}
-
-void testAdd(Plan& obj, Plan& copyObj, Plan& assignmentCopyObj)
-{
-    Resource input[2];
-    Resource output[1];
-
-    input[0] = Resource("fire", 2);
-    input[1] = Resource("water", 2);
-    output[0] = Resource("steam", 4);
-
-    Formula temp(input, 2, output, 1);
-
-    cout << "\n\nBefore adding:\n";
-    printNumFormulas(obj, copyObj, assignmentCopyObj);
-
-
-    obj.add(temp);
-    copyObj.add(temp);
-    assignmentCopyObj.add(temp);
-
-    cout << "\n\nAfter adding:\n";
-    printNumFormulas(obj, copyObj, assignmentCopyObj);
-}
-
-
-void testRemove(Plan& obj, Plan& copyObj, Plan& assignmentCopyObj)
-{   
-    cout << "\n\nBefore removing:\n";
-    printNumFormulas(obj, copyObj, assignmentCopyObj);
-
-    obj.remove();
-
-    assignmentCopyObj.remove();
-    assignmentCopyObj.remove();
-
-    cout << "\n\nAfter removing:\n";
-    printNumFormulas(obj, copyObj, assignmentCopyObj);
-}
-
-void printNumFormulas(const Plan& obj, const Plan& copyObj, const Plan& assignmentCopyObj)
-{
-    cout << "\n\nOriginal object's number of Formulas: " << obj.getNumFormulas() << "\n\n";
-    cout << "\n\nCopy constructor object's number of Formulas: " << copyObj.getNumFormulas() << "\n\n";
-    cout << "\n\nAssignmentCopy object's number of Formulas: " << assignmentCopyObj.getNumFormulas() << "\n\n";
-}
-
-// client instantiating each Formula object
-Formula* createArray(int arraySize)
+Formula* createFormulaArray(unsigned int arraySize)
 {   
     Formula* array = new Formula[arraySize];
     Resource input1[2];
@@ -191,7 +155,7 @@ Formula* createArray(int arraySize)
     output4[1] = Resource("crystals", 5);
     output4[2] = Resource("gemstone", 3);
 
-    array[2] = Formula(input4, 1, output4, 3);
+    array[3] = Formula(input4, 1, output4, 3);
 
     return array;
 }
